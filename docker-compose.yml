@@ -1,0 +1,7 @@
+services:
+  web:
+    image: my-app-server:dev
+    container_name: my-app-server-compose
+    ports:
+      - "80:80"
+    restart: unless-stopped
