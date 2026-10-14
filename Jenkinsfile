@@ -69,7 +69,7 @@ pipeline {
                         --restart unless-stopped \
                         -p 80:80 \
                         "$IMAGE_REPO:$IMAGE_TAG"
-                    curl --fail --retry 5 --retry-delay 2 http://localhost/
+                    curl --fail --silent --show-error --retry 10 --retry-connrefused --retry-delay 3 --max-time 5 http://localhost/
                 '''
             }
         }
@@ -81,3 +81,4 @@ pipeline {
         }
     }
 }
+
