@@ -61,4 +61,24 @@ pipeline {
             echo 'Pipeline finished. Check the stage results above.'
         }
     }
+    ```groovy
+        stage('Deploy to EC2') {
+            when {
+                expression { env.BRANCH_NAME != 'main' }
+            }
+            steps {
+                sh '''
+                    set -eu
+                    docker pull "$IMAGE_REPO:$IMAGE_TAG"
+                    docker rm -f my-app-server-app || true
+                    docker run -d \
+                        --name my-app-server-app \
+                        --restart unless-stopped \
+                        -p 80:80 \
+                        "$IMAGE_REPO:$IMAGE_TAG"
+                    curl --fail --retry 5 --retry-delay 2 http://localhost/
+                '''
+            }
+        }
+```
 }
