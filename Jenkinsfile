@@ -22,12 +22,24 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    if (env.BRANCH_NAME == 'main') {
-                        env.IMAGE_REPO = 'franklinmoses07/prod'
-                    } else {
-                        env.IMAGE_REPO = 'franklinmoses07/dev'
+                    def rawBranch = env.BRANCH_NAME ?: env.GIT_BRANCH ?: env.GIT_LOCAL_BRANCH ?: ''
+                    def branchName = rawBranch.substring(rawBranch.lastIndexOf('/') + 1)
+
+                    if (!branchName) {
+                        error('Unable to determine source branch from Jenkins environment.')
                     }
 
+                    echo "Detected Git branch: ${branchName}"
+
+                    if (branchName in ['main', 'master']) {
+                        env.IMAGE_REPO = 'franklinmoses07/prod'
+                    } else if (branchName == 'dev') {
+                        env.IMAGE_REPO = 'franklinmoses07/dev'
+                    } else {
+                        error("Unsupported branch '${branchName}'. Expected dev, main, or master.")
+                    }
+
+                    env.SELECTED_BRANCH = branchName
                     env.IMAGE_TAG = "${env.BUILD_NUMBER}"
                 }
 
@@ -57,7 +69,7 @@ pipeline {
 
         stage('Deploy to EC2') {
             when {
-                expression { env.BRANCH_NAME != 'main' }
+                expression { env.SELECTED_BRANCH == 'dev' }
             }
             steps {
                 sh '''
