@@ -54,14 +54,7 @@ pipeline {
                 }
             }
         }
-    }
 
-    post {
-        always {
-            echo 'Pipeline finished. Check the stage results above.'
-        }
-    }
-    ```groovy
         stage('Deploy to EC2') {
             when {
                 expression { env.BRANCH_NAME != 'main' }
@@ -80,5 +73,11 @@ pipeline {
                 '''
             }
         }
-```
+    }
+
+    post {
+        always {
+            echo 'Pipeline finished. Check the stage results above.'
+        }
+    }
 }
