@@ -4,7 +4,7 @@ set -euo pipefail
 IMAGE_NAME="my-app-server"
 IMAGE_TAG="${1:-dev}"
 CONTAINER_NAME="my-app-server-deploy"
-HOST_PORT="${2:-8080}"
+HOST_PORT="${2:-80}"
 
 echo "Deploying ${IMAGE_NAME}:${IMAGE_TAG} on port ${HOST_PORT}..."
 
