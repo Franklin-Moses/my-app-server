@@ -69,7 +69,7 @@ pipeline {
                         --restart unless-stopped \
                         -p 80:80 \
                         "$IMAGE_REPO:$IMAGE_TAG"
-                    curl --fail --silent --show-error --retry 10 --retry-connrefused --retry-delay 3 --max-time 5 http://localhost/
+                    for i in $(seq 1 20); do if curl --silent --show-error --fail --max-time 5 http://127.0.0.1/; then exit 0; fi; echo "Waiting for application HTTP response..."; sleep 3; done; echo "Health check failed after retries"; exit 1
                 '''
             }
         }
@@ -81,4 +81,5 @@ pipeline {
         }
     }
 }
+
 
